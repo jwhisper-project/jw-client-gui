@@ -92,7 +92,6 @@ public class LoginController {
         stateManager.setUserKeys(keys);
 
         ServerTrustManager serverTrustManager = new ServerTrustManager(charPassword);
-        stateManager.setServerTrustManager(serverTrustManager);
 
         String host = stateManager.getServerHostname();
         int port = stateManager.getServerPort();
