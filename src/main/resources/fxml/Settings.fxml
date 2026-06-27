@@ -24,6 +24,7 @@
 
     <Label text="Server PEM Certificate"/>
     <TextArea fx:id="pemCertificateField" prefHeight="120" promptText="-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----" style="-fx-font-family: 'Courier New';"/>
+    <PasswordField fx:id="passwordField" promptText="Password"/>
 
     <Button text="Import certificate" onAction="#handleImportCertificate" maxWidth="Infinity"/>
 

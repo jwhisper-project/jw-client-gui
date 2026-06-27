@@ -3,13 +3,20 @@ package io.github.artshp.jwhisper.client.gui.controller;
 import io.github.artshp.jwhisper.client.gui.navigation.SceneSwitcher;
 import io.github.artshp.jwhisper.client.gui.security.ServerTrustManager;
 import io.github.artshp.jwhisper.client.gui.state.AppStateManager;
+import io.github.artshp.jwhisper.common.crypto.CertUtils;
 import javafx.fxml.FXML;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import lombok.extern.slf4j.Slf4j;
+
+import java.security.cert.X509Certificate;
+import java.util.Optional;
 
 /**
  * Settings controller.
  */
+@Slf4j
 public class SettingsController {
 
     /**
@@ -41,6 +48,12 @@ public class SettingsController {
     private TextArea pemCertificateField;
 
     /**
+     * Password field
+     */
+    @FXML
+    private PasswordField passwordField;
+
+    /**
      * Create a new settings controller.
      * @param sceneSwitcher scene switcher
      * @param stateManager state manager
@@ -67,10 +80,23 @@ public class SettingsController {
     @FXML
     private void handleImportCertificate() {
         String pemString = pemCertificateField.getText();
-        if (pemString == null || pemString.isBlank()) return;
+        String password = passwordField.getText();
+        if (pemString == null || pemString.isBlank() || password.isBlank()) return;
 
-        // TODO: Call server trust manager
+        char[] charPassword = password.toCharArray();
+        ServerTrustManager serverTrustManager = new ServerTrustManager(charPassword);
+
+        Optional<X509Certificate> certificateOptional = CertUtils.parsePemCertificate(pemString);
+        if (certificateOptional.isEmpty()) {
+            LOGGER.error("Failed to load certificate.");
+            return;
+        }
+
+        X509Certificate certificate = certificateOptional.get();
+        serverTrustManager.addTrustedCertificate(certificate);
+
         pemCertificateField.clear();
+        passwordField.clear();
     }
 
     /**
