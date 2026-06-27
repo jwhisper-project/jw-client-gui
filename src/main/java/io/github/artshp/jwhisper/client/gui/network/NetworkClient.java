@@ -55,49 +55,25 @@ public class NetworkClient implements AutoCloseable {
     private final UserRegistry userRegistry = new UserRegistry();
 
     /**
-     * Trust manager needed to trust only to the white list of servers.
-     */
-    private final ServerTrustManager trustManager;
-
-    /**
-     * User keys.
-     */
-    private final UserKeys userKeys;
-
-    /**
-     * Relay's hostname.
-     */
-    private final String host;
-
-    /**
-     * Relay's port.
-     */
-    private final int port;
-
-    /**
      * Client web socket.
      */
     private WebSocket webSocket;
 
     /**
      * Create a new network client.
-     * @param trustManager server trust manager
-     * @param userKeys user keys
-     * @param host relay's hostname
-     * @param port relay's port
      */
-    public NetworkClient(ServerTrustManager trustManager, UserKeys userKeys, String host, int port) {
-        this.trustManager = trustManager;
-        this.userKeys = userKeys;
-        this.host = host;
-        this.port = port;
+    public NetworkClient() {
     }
 
     /**
      * Connect to relay server.
+     * @param host relay's hostname
+     * @param port relay's port
+     * @param userKeys user keys
+     * @param trustManager server trust manager
      * @return completed future if connected successfully, otherwise one completed exceptionally
      */
-    public CompletableFuture<Void> connect() {
+    public CompletableFuture<Void> connect(String host, int port, UserKeys userKeys, ServerTrustManager trustManager) {
         if (isConnected()) {
             LOGGER.debug("Already connected");
             return CompletableFuture.completedFuture(null);
