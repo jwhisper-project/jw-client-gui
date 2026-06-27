@@ -77,7 +77,7 @@ public class SceneSwitcher {
     private Callback<Class<?>, Object> getControllerFactory() {
         return controllerClass -> {
             if (controllerClass == LocalSetupController.class) {
-                return new LocalSetupController(this);
+                return new LocalSetupController(this, stateManager);
             } else if (controllerClass == LoginController.class) {
                 return new LoginController(this, stateManager, networkClient);
             } else if (controllerClass == SettingsController.class) {
