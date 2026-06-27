@@ -1,5 +1,6 @@
 package io.github.artshp.jwhisper.client.gui;
 
+import atlantafx.base.theme.PrimerDark;
 import io.github.artshp.jwhisper.client.gui.config.ClientConfig;
 import io.github.artshp.jwhisper.client.gui.config.ConfigManager;
 import io.github.artshp.jwhisper.client.gui.network.NetworkClient;
@@ -13,6 +14,11 @@ import io.github.artshp.jwhisper.common.exception.NetworkServiceException;
 import io.github.artshp.jwhisper.common.exception.WrongPasswordException;
 import io.github.artshp.jwhisper.common.io.ConsoleUtils;
 import io.github.artshp.jwhisper.common.io.UserInputUtils;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -23,7 +29,7 @@ import java.util.Optional;
  * Client app class.
  */
 @Slf4j
-class ClientApp {
+public class ClientApp extends Application {
 
     /**
      * Config file manager.
@@ -36,11 +42,25 @@ class ClientApp {
     public ClientApp() {
     }
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
+        Parent root = loader.load();
+
+        primaryStage.setTitle("JWhisper Desktop Client");
+        primaryStage.setScene(new Scene(root, 380, 480));
+        primaryStage.setResizable(false);
+        primaryStage.show();
+    }
+
     /**
      * Start client application.
      * @throws InputRetryException if user failed to provide required value
      * @throws NetworkServiceException if failed to register user
      */
+    @Deprecated
     public void start() throws InputRetryException, NetworkServiceException {
         LOGGER.info("Starting Client App");
         System.out.println("----- JWhisper Client -----");
