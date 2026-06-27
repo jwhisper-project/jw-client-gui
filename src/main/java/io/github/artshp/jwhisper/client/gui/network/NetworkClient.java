@@ -98,6 +98,11 @@ public class NetworkClient implements AutoCloseable {
      * @return completed future if connected successfully, otherwise one completed exceptionally
      */
     public CompletableFuture<Void> connect() {
+        if (isConnected()) {
+            LOGGER.debug("Already connected");
+            return CompletableFuture.completedFuture(null);
+        }
+
         LOGGER.info("Connecting to relay at {}:{}...", host, port);
 
         try {
@@ -112,6 +117,14 @@ public class NetworkClient implements AutoCloseable {
             LOGGER.error("Error connecting to relay", e);
             return CompletableFuture.failedFuture(e);
         }
+    }
+
+    /**
+     * Is connected to server?
+     * @return {@code true} if connected, otherwise {@code false}
+     */
+    public boolean isConnected() {
+        return webSocket != null && !webSocket.isOutputClosed() && !webSocket.isInputClosed();
     }
 
     /**
@@ -353,6 +366,7 @@ public class NetworkClient implements AutoCloseable {
         LOGGER.info("Closing connection to relay");
         if (webSocket != null) {
             webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "Closing connection").join();
+            webSocket = null;
         }
     }
 }
