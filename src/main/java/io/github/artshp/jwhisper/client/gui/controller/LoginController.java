@@ -1,22 +1,106 @@
 package io.github.artshp.jwhisper.client.gui.controller;
 
+import io.github.artshp.jwhisper.client.gui.navigation.SceneSwitcher;
+import io.github.artshp.jwhisper.client.gui.network.NetworkClient;
+import io.github.artshp.jwhisper.client.gui.security.IdentityManager;
+import io.github.artshp.jwhisper.client.gui.state.AppStateManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+/**
+ * Login controller. Responsible for login, register and settings.
+ * @see IdentityManager
+ */
 public class LoginController {
 
-    @FXML private TextField usernameField;
-    @FXML private Label statusLabel;
+    /**
+     * Scene switcher
+     */
+    private final SceneSwitcher sceneSwitcher;
 
+    /**
+     * State manager
+     */
+    private final AppStateManager stateManager;
+
+    /**
+     * Network client
+     */
+    private final NetworkClient networkClient;
+
+    /**
+     * Username field
+     */
     @FXML
-    public void initialize() {
-        System.out.println("[GUI] LoginController node elements bounded successfully!");
+    private TextField usernameField;
+
+    /**
+     * Password field
+     */
+    @FXML
+    private PasswordField passwordField;
+
+    /**
+     * Status label
+     */
+    @FXML
+    private Label statusLabel;
+
+    /**
+     * Create a new login controller.
+     * @param sceneSwitcher scene switcher
+     * @param stateManager state manager
+     * @param networkClient network client
+     */
+    public LoginController(SceneSwitcher sceneSwitcher, AppStateManager stateManager, NetworkClient networkClient) {
+        this.sceneSwitcher = sceneSwitcher;
+        this.stateManager = stateManager;
+        this.networkClient = networkClient;
     }
 
+    /**
+     * Handle "login" operation. If successful, redirect to Home screen.
+     */
     @FXML
-    private void handleConnect() {
-        String input = usernameField.getText();
-        statusLabel.setText("Hello, " + (input.isBlank() ? "Whisperer" : input) + "!");
+    private void handleLogin() {
+        String username = usernameField.getText().trim();
+        String password = passwordField.getText();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            statusLabel.setText("Please enter both username and password.");
+            return;
+        }
+
+        statusLabel.setText("Connecting to server...");
+
+        // TODO: finish implementation
+        networkClient.connect().thenRun(() -> {
+            stateManager.setCurrentUsername(username);
+
+            Platform.runLater(() -> sceneSwitcher.switchTo("/fxml/Home.fxml"));
+        }).exceptionally(ex -> {
+            Platform.runLater(() -> statusLabel.setText("Connection failed: " + ex.getCause().getMessage()));
+            return null;
+        });
+    }
+
+    /**
+     * Handle "register" operation. If successful, remain on the same screen
+     */
+    @FXML
+    private void handleRegister() {
+        statusLabel.setText("Registering account details with server...");
+        // TODO: finish implementation
+    }
+
+    /**
+     * Handle "open settings" operation. Redirect to settings screen.
+     */
+    @FXML
+    private void handleOpenSettings() {
+        sceneSwitcher.switchTo("/fxml/Settings.fxml");
     }
 }
