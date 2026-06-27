@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.github.artshp.jwhisper</groupId>
+    <artifactId>jw-client-gui</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <scm>
+        <url>https://github.com/jwhisper-project/jw-client-gui.git</url>
+        <connection>scm:git:https://github.com/jwhisper-project/jw-client-gui.git</connection>
+        <developerConnection>scm:git:git@github.com:jwhisper-project/jw-client-gui.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <java.version>25</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <jwhisper.client.mainClass>io.github.artshp.jwhisper.client.gui.Main</jwhisper.client.mainClass>
+
+        <!-- Internal -->
+        <jw-common.version>2.0.0-SNAPSHOT</jw-common.version>
+
+        <!-- External -->
+        <slf4j.version>2.0.17</slf4j.version>
+        <logback.verion>1.5.32</logback.verion>
+        <lombok.version>1.18.44</lombok.version>
+        <bouncycastle.version>1.84</bouncycastle.version>
+        <jackson.version>3.1.2</jackson.version>
+        <junit.version>6.0.3</junit.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <!-- Copy dependencies to 'target/lib' -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.10.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Specify program entry point for JAR and add libs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>${jwhisper.client.mainClass}</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Create the distribution ZIP -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/resources/assembly/zip.xml</descriptor>
+                    </descriptors>
+                    <finalName>jwhisper-client-${project.version}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Compiler plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.15.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <proc>full</proc>
+                </configuration>
+            </plugin>
+
+            <!-- Javadoc plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.12.0</version>
+                <configuration>
+                    <show>private</show>
+                    <detectJavaApiLink>true</detectJavaApiLink>
+                    <release>${java.version}</release>
+                    <overview>${project.basedir}/src/main/javadoc/overview.html</overview>
+                    <links>
+                        <link>https://docs.oracle.com/en/java/javase/${java.version}/docs/api/</link>
+                        <link>https://www.slf4j.org/apidocs-${slf4j.version}/</link>
+                        <link>https://javadoc.io/doc/tools.jackson.core/jackson-core/${jackson.version}/</link>
+                        <link>https://javadoc.io/doc/tools.jackson.core/jackson-databind/${jackson.version}/</link>
+                        <link>https://projectlombok.org/api/</link>
+                        <link>https://javadoc.io/doc/org.bouncycastle/bcprov-jdk18on/${bouncycastle.version}</link>
+                        <link>https://javadoc.io/doc/org.bouncycastle/bcpkix-jdk18on/${bouncycastle.version}</link>
+                    </links>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- Internal dependencies -->
+        <dependency>
+            <groupId>io.github.artshp.jwhisper</groupId>
+            <artifactId>jw-common</artifactId>
+            <version>${jw-common.version}</version>
+        </dependency>
+
+        <!-- Logging API -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <!-- Logging Engine -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.verion}</version>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Implementation of cryptographic algorithms -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>${bouncycastle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk18on</artifactId>
+            <version>${bouncycastle.version}</version>
+        </dependency>
+
+        <!-- Jackson - JSON -->
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <description>JWhisper CLI client.</description>
+</project>
