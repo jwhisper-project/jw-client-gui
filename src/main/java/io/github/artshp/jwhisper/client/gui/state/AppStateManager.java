@@ -2,6 +2,8 @@ package io.github.artshp.jwhisper.client.gui.state;
 
 import io.github.artshp.jwhisper.client.gui.config.ClientConfig;
 import io.github.artshp.jwhisper.client.gui.config.ConfigManager;
+import io.github.artshp.jwhisper.client.gui.security.ServerTrustManager;
+import io.github.artshp.jwhisper.client.gui.users.UserKeys;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,6 +35,14 @@ public class AppStateManager {
      */
     @Getter
     private int serverPort;
+
+    @Getter
+    @Setter
+    private UserKeys userKeys;
+
+    @Getter
+    @Setter
+    private ServerTrustManager serverTrustManager;
 
     /**
      * Create a new application state manager.
