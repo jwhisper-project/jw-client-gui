@@ -10,6 +10,12 @@ module jwhisper.client.gui {
     requires tools.jackson.databind;
     requires org.slf4j;
     requires java.net.http;
+    requires javafx.controls;
+    requires javafx.fxml;
+    requires atlantafx.base;
 
     requires jwhisper.common;
+
+    exports io.github.artshp.jwhisper.client.gui;
+    opens io.github.artshp.jwhisper.client.gui.controller to javafx.fxml;
 }
