@@ -3,9 +3,11 @@ package io.github.artshp.jwhisper.client.gui;
 import atlantafx.base.theme.PrimerDark;
 import io.github.artshp.jwhisper.client.gui.config.ClientConfig;
 import io.github.artshp.jwhisper.client.gui.config.ConfigManager;
+import io.github.artshp.jwhisper.client.gui.navigation.SceneSwitcher;
 import io.github.artshp.jwhisper.client.gui.network.NetworkClient;
 import io.github.artshp.jwhisper.client.gui.security.IdentityManager;
 import io.github.artshp.jwhisper.client.gui.security.ServerTrustManager;
+import io.github.artshp.jwhisper.client.gui.state.AppStateManager;
 import io.github.artshp.jwhisper.client.gui.users.UserKeys;
 import io.github.artshp.jwhisper.common.crypto.CertUtils;
 import io.github.artshp.jwhisper.common.crypto.PasswordUtils;
@@ -15,9 +17,6 @@ import io.github.artshp.jwhisper.common.exception.WrongPasswordException;
 import io.github.artshp.jwhisper.common.io.ConsoleUtils;
 import io.github.artshp.jwhisper.common.io.UserInputUtils;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,22 +36,37 @@ public class ClientApp extends Application {
     private final ConfigManager configManager = new ConfigManager();
 
     /**
+     * State manager
+     */
+    private final AppStateManager stateManager = new AppStateManager();
+
+    /**
+     * Network client
+     */
+    private final NetworkClient networkClient = new NetworkClient();
+
+    /**
      * Constructs a new client application.
      */
     public ClientApp() {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
+        LOGGER.info("Starting Client App");
         Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
-        Parent root = loader.load();
+        SceneSwitcher sceneSwitcher = new SceneSwitcher(primaryStage, stateManager, networkClient);
+        sceneSwitcher.switchTo("/fxml/LocalSetup.fxml");
 
-        primaryStage.setTitle("JWhisper Desktop Client");
-        primaryStage.setScene(new Scene(root, 380, 480));
-        primaryStage.setResizable(false);
+        primaryStage.setTitle("JWhisper Secure Messenger");
         primaryStage.show();
+
+        if (IdentityManager.isKeyStoreAvailable()) {
+            sceneSwitcher.switchTo("/fxml/Login.fxml");
+        } else {
+            sceneSwitcher.switchTo("/fxml/LocalSetup.fxml");
+        }
     }
 
     /**
@@ -122,8 +136,8 @@ public class ClientApp extends Application {
         }
         password = PasswordUtils.cleanPassword(password);
 
-        try (NetworkClient client = new NetworkClient(serverTrustManager, keys, config.hostname(), config.port())) {
-            var future = client.connect();
+        try (NetworkClient client = new NetworkClient(/*serverTrustManager, keys, config.hostname(), config.port()*/)) {
+            var future = client.connect(null, -1, null, null);
             future.join();
 
             if (UserInputUtils.askYesNo("Register?")) {
