@@ -3,17 +3,22 @@ package io.github.artshp.jwhisper.client.gui.controller;
 import io.github.artshp.jwhisper.client.gui.navigation.SceneSwitcher;
 import io.github.artshp.jwhisper.client.gui.network.NetworkClient;
 import io.github.artshp.jwhisper.client.gui.security.IdentityManager;
+import io.github.artshp.jwhisper.client.gui.security.ServerTrustManager;
 import io.github.artshp.jwhisper.client.gui.state.AppStateManager;
+import io.github.artshp.jwhisper.client.gui.users.UserKeys;
+import io.github.artshp.jwhisper.common.exception.WrongPasswordException;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Login controller. Responsible for login, register and settings.
  * @see IdentityManager
  */
+@Slf4j
 public class LoginController {
 
     /**
@@ -68,16 +73,34 @@ public class LoginController {
     private void handleLogin() {
         String username = usernameField.getText().trim();
         String password = passwordField.getText();
+        char[] charPassword = password.toCharArray();
 
         if (username.isEmpty() || password.isEmpty()) {
             statusLabel.setText("Please enter both username and password.");
             return;
         }
 
+        UserKeys keys;
+        LOGGER.info("Key Store is available. Trying to load it...");
+
+        try {
+            keys = IdentityManager.loadKeys(charPassword);
+        } catch (WrongPasswordException e) {
+            LOGGER.error("Wrong password provided.");
+            return;
+        }
+        stateManager.setUserKeys(keys);
+
+        ServerTrustManager serverTrustManager = new ServerTrustManager(charPassword);
+        stateManager.setServerTrustManager(serverTrustManager);
+
+        String host = stateManager.getServerHostname();
+        int port = stateManager.getServerPort();
+
         statusLabel.setText("Connecting to server...");
 
         // TODO: finish implementation
-        networkClient.connect().thenRun(() -> {
+        networkClient.connect(host, port, keys, serverTrustManager).thenRun(() -> {
             stateManager.setCurrentUsername(username);
 
             Platform.runLater(() -> sceneSwitcher.switchTo("/fxml/Home.fxml"));
