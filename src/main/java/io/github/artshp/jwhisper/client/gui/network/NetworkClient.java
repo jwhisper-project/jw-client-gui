@@ -347,17 +347,6 @@ public class NetworkClient implements AutoCloseable {
     }
 
     /**
-     * Receive message from server.
-     * @return received message
-     * @throws IOException if failed to receive message
-     */
-    @Deprecated
-    public WhisperMessage receive() throws IOException {
-        // return transport.receiveMessage(socket.getInputStream(), WhisperMessage.class);
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
      * Stop client, close connection to server.
      * @throws IOException if an I/O error occurs when closing the web socket
      */
