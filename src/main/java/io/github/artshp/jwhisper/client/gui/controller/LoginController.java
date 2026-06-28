@@ -14,6 +14,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+
 /**
  * Login controller. Responsible for login, register and settings.
  * @see IdentityManager
@@ -98,13 +100,25 @@ public class LoginController {
 
         statusLabel.setText("Connecting to server...");
 
-        // TODO: finish implementation
         networkClient.connect(host, port, keys, serverTrustManager).thenRun(() -> {
+            boolean isLoggedIn;
+            try {
+                isLoggedIn = networkClient.login(username, keys.signing().getPrivate());
+            } catch (IOException e) {
+                Platform.runLater(() -> statusLabel.setText("Login failed: " + e.getCause().getMessage()));
+                return;
+            }
+
+            if (!isLoggedIn) {
+                Platform.runLater(() -> statusLabel.setText("Login failed"));
+                return;
+            }
+
             stateManager.setCurrentUsername(username);
 
             Platform.runLater(() -> sceneSwitcher.switchTo("/fxml/Home.fxml"));
-        }).exceptionally(ex -> {
-            Platform.runLater(() -> statusLabel.setText("Connection failed: " + ex.getCause().getMessage()));
+        }).exceptionally(e -> {
+            Platform.runLater(() -> statusLabel.setText("Connection failed: " + e.getCause().getMessage()));
             return null;
         });
     }
@@ -114,8 +128,51 @@ public class LoginController {
      */
     @FXML
     private void handleRegister() {
-        statusLabel.setText("Registering account details with server...");
-        // TODO: finish implementation
+        String username = usernameField.getText().trim();
+        String password = passwordField.getText();
+        char[] charPassword = password.toCharArray();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            statusLabel.setText("Please enter both username and password.");
+            return;
+        }
+
+        UserKeys keys;
+        LOGGER.info("Key Store is available. Trying to load it...");
+
+        try {
+            keys = IdentityManager.loadKeys(charPassword);
+        } catch (WrongPasswordException e) {
+            LOGGER.error("Wrong password provided.");
+            return;
+        }
+        stateManager.setUserKeys(keys);
+
+        ServerTrustManager serverTrustManager = new ServerTrustManager(charPassword);
+
+        String host = stateManager.getServerHostname();
+        int port = stateManager.getServerPort();
+
+        statusLabel.setText("Connecting to server...");
+        networkClient.connect(host, port, keys, serverTrustManager).thenRun(() -> {
+            boolean isRegistered;
+            try {
+                isRegistered = networkClient.register(username, keys);
+            } catch (IOException e) {
+                Platform.runLater(() -> statusLabel.setText("Register failed: " + e.getCause().getMessage()));
+                return;
+            }
+
+            if (!isRegistered) {
+                Platform.runLater(() -> statusLabel.setText("Register failed"));
+                return;
+            }
+
+            Platform.runLater(() -> statusLabel.setText("Registered successfully"));
+        }).exceptionally(e -> {
+            Platform.runLater(() -> statusLabel.setText("Connection failed: " + e.getCause().getMessage()));
+            return null;
+        });
     }
 
     /**
