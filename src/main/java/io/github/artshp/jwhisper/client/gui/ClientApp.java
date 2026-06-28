@@ -1,7 +1,6 @@
 package io.github.artshp.jwhisper.client.gui;
 
 import atlantafx.base.theme.PrimerDark;
-import io.github.artshp.jwhisper.client.gui.config.ConfigManager;
 import io.github.artshp.jwhisper.client.gui.navigation.SceneSwitcher;
 import io.github.artshp.jwhisper.client.gui.network.NetworkClient;
 import io.github.artshp.jwhisper.client.gui.security.IdentityManager;
@@ -18,11 +17,6 @@ import java.util.Objects;
  */
 @Slf4j
 public class ClientApp extends Application {
-
-    /**
-     * Config file manager.
-     */
-    private final ConfigManager configManager = new ConfigManager();
 
     /**
      * State manager
