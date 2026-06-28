@@ -23,7 +23,7 @@
     <Label text="JWhisper Authentication" styleClass="title-2"/>
 
     <TextField fx:id="usernameField" promptText="Username"/>
-    <PasswordField fx:id="passwordField" promptText="Password"/>
+    <PasswordField fx:id="passwordField" promptText="Master password"/>
 
     <HBox spacing="10.0" alignment="CENTER" maxWidth="Infinity">
         <Button text="Log In" onAction="#handleLogin" HBox.hgrow="ALWAYS" maxWidth="Infinity" styleClass="success"/>
