@@ -1,5 +1,6 @@
 package io.github.artshp.jwhisper.client.gui.navigation;
 
+import io.github.artshp.jwhisper.client.gui.controller.HomeController;
 import io.github.artshp.jwhisper.client.gui.controller.LocalSetupController;
 import io.github.artshp.jwhisper.client.gui.controller.LoginController;
 import io.github.artshp.jwhisper.client.gui.controller.SettingsController;
@@ -82,6 +83,8 @@ public class SceneSwitcher {
                 return new LoginController(this, stateManager, networkClient);
             } else if (controllerClass == SettingsController.class) {
                 return new SettingsController(this, stateManager);
+            } else if (controllerClass == HomeController.class) {
+                return new HomeController(this, stateManager, networkClient);
             }
 
             throw new IllegalArgumentException("Unknown controller class type: " + controllerClass);
