@@ -1,6 +1,10 @@
 package io.github.artshp.jwhisper.client.gui;
 
 import atlantafx.base.theme.PrimerDark;
+import io.github.artshp.jwhisper.client.gui.controller.HomeController;
+import io.github.artshp.jwhisper.client.gui.controller.LocalSetupController;
+import io.github.artshp.jwhisper.client.gui.controller.LoginController;
+import io.github.artshp.jwhisper.client.gui.controller.SettingsController;
 import io.github.artshp.jwhisper.client.gui.navigation.SceneSwitcher;
 import io.github.artshp.jwhisper.client.gui.network.NetworkClient;
 import io.github.artshp.jwhisper.client.gui.security.IdentityManager;
@@ -43,7 +47,16 @@ public class ClientApp extends Application {
                 Objects.requireNonNull(getClass().getResourceAsStream("/icons/app-icon.png"))
         ));
 
-        SceneSwitcher sceneSwitcher = new SceneSwitcher(primaryStage, stateManager, networkClient);
+        SceneSwitcher sceneSwitcher = new SceneSwitcher(primaryStage);
+        sceneSwitcher.registerController(LocalSetupController.class, () ->
+                new LocalSetupController(sceneSwitcher, stateManager));
+        sceneSwitcher.registerController(LoginController.class, () ->
+                new LoginController(sceneSwitcher, stateManager, networkClient));
+        sceneSwitcher.registerController(SettingsController.class, () ->
+                new SettingsController(sceneSwitcher, stateManager));
+        sceneSwitcher.registerController(HomeController.class, () ->
+                new HomeController(sceneSwitcher, stateManager, networkClient));
+
         sceneSwitcher.switchTo("/fxml/LocalSetup.fxml");
 
         primaryStage.setTitle("JWhisper Secure Messenger");

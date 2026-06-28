@@ -1,11 +1,5 @@
 package io.github.artshp.jwhisper.client.gui.navigation;
 
-import io.github.artshp.jwhisper.client.gui.controller.HomeController;
-import io.github.artshp.jwhisper.client.gui.controller.LocalSetupController;
-import io.github.artshp.jwhisper.client.gui.controller.LoginController;
-import io.github.artshp.jwhisper.client.gui.controller.SettingsController;
-import io.github.artshp.jwhisper.client.gui.network.NetworkClient;
-import io.github.artshp.jwhisper.client.gui.state.AppStateManager;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,6 +7,8 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.function.Supplier;
 
 /**
  * Class responsible for switching between scenes.
@@ -20,30 +16,31 @@ import java.io.IOException;
 public class SceneSwitcher {
 
     /**
+     * Controllers registry
+     */
+    private final HashMap<Class<?>, Supplier<?>> controllers = new HashMap<>();
+
+    /**
      * Application stage
      */
     private final Stage stage;
 
     /**
-     * Application state manager
-     */
-    private final AppStateManager stateManager;
-
-    /**
-     * Application network client
-     */
-    private final NetworkClient networkClient;
-
-    /**
      * Create a new scene switcher.
      * @param stage stage
-     * @param stateManager state manager
-     * @param networkClient network client
      */
-    public SceneSwitcher(Stage stage, AppStateManager stateManager, NetworkClient networkClient) {
+    public SceneSwitcher(Stage stage) {
         this.stage = stage;
-        this.stateManager = stateManager;
-        this.networkClient = networkClient;
+    }
+
+    /**
+     * Registers a controller class with its constructor factory.
+     * @param controllerClass controller class
+     * @param controllerSupplier supplier providing new instance of controller
+     * @param <T> controller type
+     */
+    public <T> void registerController(Class<T> controllerClass, Supplier<T> controllerSupplier) {
+        controllers.put(controllerClass, controllerSupplier);
     }
 
     /**
@@ -77,17 +74,13 @@ public class SceneSwitcher {
      */
     private Callback<Class<?>, Object> getControllerFactory() {
         return controllerClass -> {
-            if (controllerClass == LocalSetupController.class) {
-                return new LocalSetupController(this, stateManager);
-            } else if (controllerClass == LoginController.class) {
-                return new LoginController(this, stateManager, networkClient);
-            } else if (controllerClass == SettingsController.class) {
-                return new SettingsController(this, stateManager);
-            } else if (controllerClass == HomeController.class) {
-                return new HomeController(this, stateManager, networkClient);
+            Supplier<?> supplier = controllers.get(controllerClass);
+            if (supplier != null) {
+                return supplier.get();
             }
-
-            throw new IllegalArgumentException("Unknown controller class type: " + controllerClass);
+            throw new IllegalArgumentException(
+                    "No controller factory registered for type: " + controllerClass.getName()
+            );
         };
     }
 }
