@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.SVGPath?>
+<SplitPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="io.github.artshp.jwhisper.client.gui.controller.HomeController"
+           dividerPositions="0.32" prefWidth="850" prefHeight="600">
+    <VBox spacing="10.0" minWidth="220" maxWidth="350">
+        <padding>
+            <Insets top="15" right="15" bottom="15" left="15"/>
+        </padding>
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <Label text="Conversations" styleClass="title-3" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <Button onAction="#handleNewChatDialog" styleClass="button-circle sm" mnemonicParsing="false">
+                <graphic>
+                    <SVGPath content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" style="-fx-fill: -fx-text-fill;"/>
+                </graphic>
+            </Button>
+        </HBox>
+
+        <ListView fx:id="contactsListView" VBox.vgrow="ALWAYS" styleClass="striped"/>
+
+        <Separator/>
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <Label fx:id="currentUserLabel" text="\@USERNAME" styleClass="text-bold" HBox.hgrow="ALWAYS"
+                   maxWidth="Infinity"/>
+            <Button text="Logout" onAction="#handleLogout" styleClass="danger sm"/>
+        </HBox>
+    </VBox>
+
+    <VBox fx:id="chatCanvasArea" spacing="10.0">
+        <padding>
+            <Insets top="15" right="15" bottom="15" left="15"/>
+        </padding>
+
+        <HBox alignment="CENTER_LEFT" styleClass="border bottom-only">
+            <padding>
+                <Insets bottom="10"/>
+            </padding>
+            <Label fx:id="activeChatPartnerLabel" text="Select a conversation to start messaging" styleClass="title-3"/>
+        </HBox>
+
+        <ScrollPane fx:id="timelineScrollPane" VBox.vgrow="ALWAYS" fitToWidth="true" styleClass="edge-to-edge">
+            <content>
+                <VBox fx:id="messageContainer" spacing="8.0">
+                    <padding>
+                        <Insets top="5" right="5" bottom="5" left="5"/>
+                    </padding>
+                </VBox>
+            </content>
+        </ScrollPane>
+
+        <HBox spacing="10.0" alignment="CENTER_LEFT">
+            <TextField fx:id="messageInputField" promptText="Write an encrypted message..." HBox.hgrow="ALWAYS"
+                       onAction="#handleSendMessage"/>
+            <Button text="Send" onAction="#handleSendMessage" styleClass="accent"/>
+        </HBox>
+    </VBox>
+</SplitPane>
