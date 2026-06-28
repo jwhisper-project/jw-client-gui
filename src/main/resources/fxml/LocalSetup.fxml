@@ -15,7 +15,8 @@
            styleClass="muted" wrapText="true"/>
 
     <PasswordField fx:id="masterPasswordField" promptText="Choose a strong Master Password"/>
-    <PasswordField fx:id="confirmPasswordField" promptText="Confirm Master Password"/>
+    <PasswordField fx:id="confirmPasswordField" promptText="Confirm Master Password"
+                   onAction="#handleGenerateIdentity"/>
 
     <Button fx:id="generateButton" text="Generate keys &amp; save" onAction="#handleGenerateIdentity"
             maxWidth="Infinity" styleClass="accent"/>
