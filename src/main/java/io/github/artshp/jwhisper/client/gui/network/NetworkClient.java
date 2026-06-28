@@ -2,6 +2,7 @@ package io.github.artshp.jwhisper.client.gui.network;
 
 import io.github.artshp.jwhisper.client.gui.security.MessageCrypto;
 import io.github.artshp.jwhisper.client.gui.security.ServerTrustManager;
+import io.github.artshp.jwhisper.client.gui.state.AppStateManager;
 import io.github.artshp.jwhisper.client.gui.users.UserKeys;
 import io.github.artshp.jwhisper.client.gui.users.UserRegistry;
 import io.github.artshp.jwhisper.common.crypto.PublicKeyUtils;
@@ -71,9 +72,16 @@ public class NetworkClient implements AutoCloseable {
      * @param port relay's port
      * @param userKeys user keys
      * @param trustManager server trust manager
+     * @param stateManager state manager
      * @return completed future if connected successfully, otherwise one completed exceptionally
      */
-    public CompletableFuture<Void> connect(String host, int port, UserKeys userKeys, ServerTrustManager trustManager) {
+    public CompletableFuture<Void> connect(
+            String host,
+            int port,
+            UserKeys userKeys,
+            ServerTrustManager trustManager,
+            AppStateManager stateManager
+    ) {
         if (isConnected()) {
             LOGGER.debug("Already connected");
             return CompletableFuture.completedFuture(null);
@@ -86,7 +94,7 @@ public class NetworkClient implements AutoCloseable {
             URI uri = new URI(WEBSOCKET_PROTOCOL, null, host, port, WEBSOCKET_ENDPOINT, null, null);
 
             return client.newWebSocketBuilder()
-                    .buildAsync(uri, new WebSocketListener(userRegistry, pendingRequests, userKeys))
+                    .buildAsync(uri, new WebSocketListener(stateManager, userRegistry, pendingRequests, userKeys))
                     .thenAccept(ws -> webSocket = ws);
 
         } catch (Exception e) {

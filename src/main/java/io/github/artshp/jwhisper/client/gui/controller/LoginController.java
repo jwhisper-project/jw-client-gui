@@ -100,7 +100,7 @@ public class LoginController {
 
         statusLabel.setText("Connecting to server...");
 
-        networkClient.connect(host, port, keys, serverTrustManager).thenRun(() -> {
+        networkClient.connect(host, port, keys, serverTrustManager, stateManager).thenRun(() -> {
             boolean isLoggedIn;
             try {
                 isLoggedIn = networkClient.login(username, keys.signing().getPrivate());
@@ -154,7 +154,7 @@ public class LoginController {
         int port = stateManager.getServerPort();
 
         statusLabel.setText("Connecting to server...");
-        networkClient.connect(host, port, keys, serverTrustManager).thenRun(() -> {
+        networkClient.connect(host, port, keys, serverTrustManager, stateManager).thenRun(() -> {
             boolean isRegistered;
             try {
                 isRegistered = networkClient.register(username, keys);

@@ -137,7 +137,7 @@ public class ClientApp extends Application {
         password = PasswordUtils.cleanPassword(password);
 
         try (NetworkClient client = new NetworkClient(/*serverTrustManager, keys, config.hostname(), config.port()*/)) {
-            var future = client.connect(null, -1, null, null);
+            var future = client.connect(null, -1, null, null, null);
             future.join();
 
             if (UserInputUtils.askYesNo("Register?")) {
