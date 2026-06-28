@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="io.github.artshp.jwhisper.client.gui.controller.SettingsController"
+      alignment="CENTER_LEFT" spacing="15.0" prefWidth="380" prefHeight="480">
+    <padding>
+        <Insets top="30" right="40" bottom="30" left="40"/>
+    </padding>
+
+    <Label text="Settings" styleClass="title-2" alignment="CENTER" maxWidth="Infinity"/>
+
+    <Label text="Server Hostname"/>
+    <TextField fx:id="hostnameField"/>
+
+    <Label text="Server Port"/>
+    <TextField fx:id="portField"/>
+
+    <Button text="Save" onAction="#handleSave" maxWidth="Infinity" styleClass="accent"/>
+
+    <Separator/>
+
+    <Label text="Server PEM Certificate"/>
+    <TextArea fx:id="pemCertificateField" prefHeight="120" promptText="-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----" style="-fx-font-family: 'Courier New';"/>
+    <PasswordField fx:id="passwordField" promptText="Master password"/>
+
+    <Button text="Import certificate" onAction="#handleImportCertificate" maxWidth="Infinity"/>
+
+    <Separator/>
+
+    <Button text="Return" onAction="#handleReturn" maxWidth="Infinity" styleClass="accent"/>
+</VBox>

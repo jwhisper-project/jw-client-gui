@@ -83,10 +83,31 @@ public class ConfigManager {
     }
 
     /**
+     * Load configuration. If it doesn't exist, prepare a default one.
+     * @return loaded or created configuration
+     * @throws ConfigFileException if failed to load or save config file
+     */
+    public ClientConfig loadOrCreateDefaultConfig() throws ConfigFileException {
+        if (!isConfigPresent()) {
+            saveConfig(getDefaultConfig());
+        }
+
+        return loadConfig();
+    }
+
+    /**
      * Is configuration file present?
      * @return {@code true} if config file is present, otherwise {@code false}
      */
     public boolean isConfigPresent() {
         return Files.exists(configPath);
+    }
+
+    /**
+     * Create a new instance of default configs.
+     * @return default configs
+     */
+    private ClientConfig getDefaultConfig() {
+        return new ClientConfig("localhost", 8443);
     }
 }

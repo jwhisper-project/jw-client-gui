@@ -1,6 +1,7 @@
 package io.github.artshp.jwhisper.client.gui.network;
 
 import io.github.artshp.jwhisper.client.gui.security.MessageCrypto;
+import io.github.artshp.jwhisper.client.gui.state.AppStateManager;
 import io.github.artshp.jwhisper.client.gui.users.UserKeys;
 import io.github.artshp.jwhisper.client.gui.users.UserRegistry;
 import io.github.artshp.jwhisper.common.crypto.PublicKeyUtils;
@@ -29,6 +30,11 @@ public class WebSocketListener implements WebSocket.Listener {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     /**
+     * Application state manager
+     */
+    private final AppStateManager stateManager;
+
+    /**
      * Service for caching information about other users.
      */
     private final UserRegistry userRegistry;
@@ -45,11 +51,18 @@ public class WebSocketListener implements WebSocket.Listener {
 
     /**
      * Create a new listener.
+     * @param stateManager state manager
      * @param userRegistry user registry
      * @param pendingRequests pending requests service
      * @param userKeys user keys
      */
-    public WebSocketListener(UserRegistry userRegistry, PendingRequestsService pendingRequests, UserKeys userKeys) {
+    public WebSocketListener(
+            AppStateManager stateManager,
+            UserRegistry userRegistry,
+            PendingRequestsService pendingRequests,
+            UserKeys userKeys
+    ) {
+        this.stateManager = stateManager;
         this.userRegistry = userRegistry;
         this.pendingRequests = pendingRequests;
         this.userKeys = userKeys;
@@ -131,6 +144,7 @@ public class WebSocketListener implements WebSocket.Listener {
             );
             String plainText = new String(data, StandardCharsets.UTF_8);
             LOGGER.info("Message received from {}: {}", sender, plainText);
+            stateManager.dispatchMessage(sender, plainText);
         } catch (Exception e) {
             LOGGER.error("Failed to decrypt message from {}", sender, e);
         }

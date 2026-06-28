@@ -2,6 +2,7 @@ package io.github.artshp.jwhisper.client.gui.network;
 
 import io.github.artshp.jwhisper.client.gui.security.MessageCrypto;
 import io.github.artshp.jwhisper.client.gui.security.ServerTrustManager;
+import io.github.artshp.jwhisper.client.gui.state.AppStateManager;
 import io.github.artshp.jwhisper.client.gui.users.UserKeys;
 import io.github.artshp.jwhisper.client.gui.users.UserRegistry;
 import io.github.artshp.jwhisper.common.crypto.PublicKeyUtils;
@@ -55,49 +56,37 @@ public class NetworkClient implements AutoCloseable {
     private final UserRegistry userRegistry = new UserRegistry();
 
     /**
-     * Trust manager needed to trust only to the white list of servers.
-     */
-    private final ServerTrustManager trustManager;
-
-    /**
-     * User keys.
-     */
-    private final UserKeys userKeys;
-
-    /**
-     * Relay's hostname.
-     */
-    private final String host;
-
-    /**
-     * Relay's port.
-     */
-    private final int port;
-
-    /**
      * Client web socket.
      */
     private WebSocket webSocket;
 
     /**
      * Create a new network client.
-     * @param trustManager server trust manager
-     * @param userKeys user keys
-     * @param host relay's hostname
-     * @param port relay's port
      */
-    public NetworkClient(ServerTrustManager trustManager, UserKeys userKeys, String host, int port) {
-        this.trustManager = trustManager;
-        this.userKeys = userKeys;
-        this.host = host;
-        this.port = port;
+    public NetworkClient() {
     }
 
     /**
      * Connect to relay server.
+     * @param host relay's hostname
+     * @param port relay's port
+     * @param userKeys user keys
+     * @param trustManager server trust manager
+     * @param stateManager state manager
      * @return completed future if connected successfully, otherwise one completed exceptionally
      */
-    public CompletableFuture<Void> connect() {
+    public CompletableFuture<Void> connect(
+            String host,
+            int port,
+            UserKeys userKeys,
+            ServerTrustManager trustManager,
+            AppStateManager stateManager
+    ) {
+        if (isConnected()) {
+            LOGGER.debug("Already connected");
+            return CompletableFuture.completedFuture(null);
+        }
+
         LOGGER.info("Connecting to relay at {}:{}...", host, port);
 
         try {
@@ -105,13 +94,21 @@ public class NetworkClient implements AutoCloseable {
             URI uri = new URI(WEBSOCKET_PROTOCOL, null, host, port, WEBSOCKET_ENDPOINT, null, null);
 
             return client.newWebSocketBuilder()
-                    .buildAsync(uri, new WebSocketListener(userRegistry, pendingRequests, userKeys))
+                    .buildAsync(uri, new WebSocketListener(stateManager, userRegistry, pendingRequests, userKeys))
                     .thenAccept(ws -> webSocket = ws);
 
         } catch (Exception e) {
             LOGGER.error("Error connecting to relay", e);
             return CompletableFuture.failedFuture(e);
         }
+    }
+
+    /**
+     * Is connected to server?
+     * @return {@code true} if connected, otherwise {@code false}
+     */
+    public boolean isConnected() {
+        return webSocket != null && !webSocket.isOutputClosed() && !webSocket.isInputClosed();
     }
 
     /**
@@ -334,17 +331,6 @@ public class NetworkClient implements AutoCloseable {
     }
 
     /**
-     * Receive message from server.
-     * @return received message
-     * @throws IOException if failed to receive message
-     */
-    @Deprecated
-    public WhisperMessage receive() throws IOException {
-        // return transport.receiveMessage(socket.getInputStream(), WhisperMessage.class);
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
      * Stop client, close connection to server.
      * @throws IOException if an I/O error occurs when closing the web socket
      */
@@ -353,6 +339,7 @@ public class NetworkClient implements AutoCloseable {
         LOGGER.info("Closing connection to relay");
         if (webSocket != null) {
             webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "Closing connection").join();
+            webSocket = null;
         }
     }
 }
