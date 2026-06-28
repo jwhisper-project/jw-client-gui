@@ -17,11 +17,13 @@ import io.github.artshp.jwhisper.common.exception.WrongPasswordException;
 import io.github.artshp.jwhisper.common.io.ConsoleUtils;
 import io.github.artshp.jwhisper.common.io.UserInputUtils;
 import javafx.application.Application;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.security.cert.X509Certificate;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -55,6 +57,10 @@ public class ClientApp extends Application {
     public void start(Stage primaryStage) {
         LOGGER.info("Starting Client App");
         Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+
+        primaryStage.getIcons().add(new Image(
+                Objects.requireNonNull(getClass().getResourceAsStream("/icons/app-icon.png"))
+        ));
 
         SceneSwitcher sceneSwitcher = new SceneSwitcher(primaryStage, stateManager, networkClient);
         sceneSwitcher.switchTo("/fxml/LocalSetup.fxml");
