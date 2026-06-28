@@ -18,7 +18,7 @@
     <Label text="Server Port"/>
     <TextField fx:id="portField"/>
 
-    <Button text="Save" onAction="#handleSave" maxWidth="Infinity" styleClass="button-accent"/>
+    <Button text="Save" onAction="#handleSave" maxWidth="Infinity" styleClass="accent"/>
 
     <Separator/>
 
@@ -30,5 +30,5 @@
 
     <Separator/>
 
-    <Button text="Return" onAction="#handleReturn" maxWidth="Infinity" styleClass="button-accent"/>
+    <Button text="Return" onAction="#handleReturn" maxWidth="Infinity" styleClass="accent"/>
 </VBox>

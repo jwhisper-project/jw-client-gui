@@ -176,7 +176,7 @@ public class HomeController {
         textLabel.setMaxWidth(300);
 
         HBox bubbleWrapper = new HBox(textLabel);
-        bubbleWrapper.setPadding(new Insets(6, 12, 6, 12));
+        bubbleWrapper.setPadding(new Insets(8, 14, 8, 14));
         bubbleWrapper.getStyleClass().add("card");
 
         HBox alignmentWrapper = new HBox(bubbleWrapper);
@@ -185,13 +185,21 @@ public class HomeController {
         if (uiMessage.isFromMe()) {
             alignmentWrapper.setAlignment(Pos.CENTER_RIGHT);
 
-            bubbleWrapper.getStyleClass().add("bg-accent-subtle");
-            bubbleWrapper.setStyle("-fx-background-radius: 12 12 2 12;");
+            bubbleWrapper.setStyle(
+                    "-fx-background-color: #2f80ed; " +
+                    "-fx-background-radius: 14 14 2 14;"
+            );
+            textLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: bold;");
         } else {
             alignmentWrapper.setAlignment(Pos.CENTER_LEFT);
 
-            bubbleWrapper.getStyleClass().add("bg-neutral-subtle");
-            bubbleWrapper.setStyle("-fx-background-radius: 12 12 12 2;");
+            bubbleWrapper.setStyle(
+                    "-fx-background-color: #2d3139; " +
+                    "-fx-border-color: #414754; " +
+                    "-fx-border-radius: 14 14 14 2; " +
+                    "-fx-background-radius: 14 14 14 2;"
+            );
+            textLabel.setStyle("-fx-text-fill: #f0f2f5;");
         }
 
         messageContainer.getChildren().add(alignmentWrapper);

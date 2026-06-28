@@ -12,13 +12,13 @@
 
     <Label text="Initialize Identity" styleClass="title-2"/>
     <Label text="No local cryptographic identity found. Create a master key pair to secure your communication."
-           styleClass="text-muted" wrapText="true"/>
+           styleClass="muted" wrapText="true"/>
 
     <PasswordField fx:id="masterPasswordField" promptText="Choose a strong Master Password"/>
     <PasswordField fx:id="confirmPasswordField" promptText="Confirm Master Password"/>
 
     <Button fx:id="generateButton" text="Generate keys &amp; save" onAction="#handleGenerateIdentity"
-            maxWidth="Infinity" styleClass="button-accent"/>
+            maxWidth="Infinity" styleClass="accent"/>
 
     <Label fx:id="errorLabel" styleClass="danger" wrapText="true"/>
 </VBox>
