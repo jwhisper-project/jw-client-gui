@@ -238,6 +238,7 @@ public class NetworkClient implements AutoCloseable {
      * @param privateSigningKey private signing key of user
      * @param targetUsername target user username
      * @param plainText message to send
+     * @return {@code true} if sent successfully, otherwise {@code false}
      * @throws NetworkServiceException if failed to encrypt message for user
      * @throws IOException if failed to send message
      */
@@ -313,7 +314,9 @@ public class NetworkClient implements AutoCloseable {
     /**
      * Send message to server.
      * @param message message to send
+     * @return future with response message, otherwise {@code null} if response is not awaited
      * @throws IOException if failed to send message
+     * @see Identifiable
      */
     public CompletableFuture<WhisperMessage> send(WhisperMessage message) throws IOException {
         String data = mapper.writeValueAsString(message);
