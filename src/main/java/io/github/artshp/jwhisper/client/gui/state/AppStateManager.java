@@ -45,6 +45,9 @@ public class AppStateManager {
     @Getter
     private int serverPort;
 
+    /**
+     * User keys
+     */
     @Getter
     @Setter
     private UserKeys userKeys;
