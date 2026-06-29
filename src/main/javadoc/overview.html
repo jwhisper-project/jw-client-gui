@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JWhisper Client GUI Overview</title>
+</head>
+<body>
+<h1>JWhisper Client GUI Overview</h1>
+
+<p>
+    The <code>jw-client-gui</code> artifact is the modern, desktop-facing rich user interface for JWhisper end-users.
+    It abstracts complex cryptographic actions into a clean, responsive layout utilizing JavaFX, the
+    AtlantaFX theme engine, and a dynamic view navigation routing system while maintaining rigorous
+    client-side End-to-End Encryption (E2EE).
+</p>
+
+<h2>Key Structural Pillars</h2>
+<ul>
+    <li><strong>io.github.artshp.jwhisper.client.gui.controller:</strong>
+        Binds user actions to application behavior. Manages user states across specialized workspaces
+        including initial node handshakes (<code>LocalSetup</code>), secure profile authentication
+        (<code>Login</code>), and real-time chat timelines (<code>Home</code>).
+    </li>
+    <li><strong>io.github.artshp.jwhisper.client.gui.navigation:</strong>
+        Implements a functional, decoupled <code>SceneSwitcher</code> registry engine. Replaces rigid
+        conditional factories with a dynamic map configuration of manual constructor injection rules,
+        ensuring smooth runtime route updates across layouts.
+    </li>
+    <li><strong>io.github.artshp.jwhisper.client.gui.state:</strong>
+        Acts as the localized application memory brain. Leverages non-blocking concurrent data
+        structures like <code>CopyOnWriteArrayList</code> to safely manage and dispatch incoming
+        message events across the background WebSocket thread and the active JavaFX Application context thread.
+    </li>
+</ul>
+
+<h2>UI Experience Enhancements</h2>
+<ul>
+    <li><strong>AtlantaFX Dark Theme Integration:</strong> Configured natively using looked-up CSS variables
+        and structural typography rules to eliminate unneeded styles and ensure elegant contrast ratios.
+    </li>
+</ul>
+
+</body>
+</html>
