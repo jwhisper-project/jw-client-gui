@@ -263,6 +263,7 @@ public class HomeController {
      */
     @FXML
     private void handleLogout() throws IOException {
+        networkClient.logout();
         networkClient.close();
         stateManager.setCurrentUsername(null);
         conversationLedger.clear();
