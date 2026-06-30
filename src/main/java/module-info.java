@@ -18,4 +18,5 @@ module jwhisper.client.gui {
 
     exports io.github.artshp.jwhisper.client.gui;
     opens io.github.artshp.jwhisper.client.gui.controller to javafx.fxml;
+    opens io.github.artshp.jwhisper.client.gui.config to tools.jackson.databind;
 }
